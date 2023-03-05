@@ -1,5 +1,7 @@
 all: build up
 
+build: build up
+
 shell:
 	docker compose exec aero_app bash
 
