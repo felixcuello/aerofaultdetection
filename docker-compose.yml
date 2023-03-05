@@ -1,0 +1,46 @@
+version: "3"
+
+services:
+  aero_app:
+    platform: linux/amd64
+    build:
+      context: ./aero_app/
+      dockerfile: Dockerfile
+      args:
+        POSTGRES_DB: ${POSTGRES_DB}
+        POSTGRES_USER: ${POSTGRES_USER}
+        POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    environment:
+      FLASK_ENV: "development"
+      LOG_LEVEL: "INFO"
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTRGRES_DB: ${POSTGRES_DB}
+      POSTGRES_HOST: ${POSTGRES_HOST}
+      POSTGRES_PORT: ${POSTGRES_PORT}
+      PYTHONIOENCODING: utf-8 # Required to decode correctly the CSV files
+    env_file:
+      - .env
+    volumes:
+      - ./aero_app:/app
+      - ./data/:/data
+    depends_on:
+      - aero_db
+    networks:
+      - aero_network
+    ports:
+      - 80:80
+
+  aero_db:
+    image: postgres:14.3-bullseye
+    env_file:
+      - .env
+    volumes:
+      - ./aero_db:/var/lib/postgresql/data
+    ports:
+      - 5432:5432
+    networks:
+      - aero_network
+
+networks:
+  aero_network:
