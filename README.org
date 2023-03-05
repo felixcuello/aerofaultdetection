@@ -4,22 +4,22 @@
 This is an AI/ML project to detect faulty sensors on wind turbines.
 
 ** Setup
-Everything is set up inside the `Makefile`. So you have to look inside that file for the options.
+Everything is set up inside the ```Makefile```. So you have to look inside that file for the options.
 
-First copy the `.env.sample` into the `.env` and adjust all the environment variables (*DO NOT LEAVE THE DEFAULTS*).
+First copy the ```.env.sample``` into the ```.env``` and adjust all the environment variables (*DO NOT LEAVE THE DEFAULTS*).
 
 *** Database
 
 The most common options are:
 
-- `make db_up` : To start the database
+- ```make db_up``` : To start the database
 
-- `make db_create` : To create the database tables (after the container was started)
+- ```make db_create``` : To create the database tables (after the container was started)
 
-- `make db_delete` : To delete the database tables (after the container was created)
+- ```make db_delete``` : To delete the database tables (after the container was created)
 
-- `make psql` : To access a psql command inside the DB container
+- ```make psql``` : To access a psql command inside the DB container
 
 *** Application
 
-- `make testshell` : To get a bash shell inside the application container
+- ```make testshell``` : To get a bash shell inside the application container
