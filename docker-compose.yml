@@ -11,13 +11,13 @@ services:
         POSTGRES_USER: ${POSTGRES_USER}
         POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     environment:
-      LOG_LEVEL: "INFO"
+      LOG_LEVEL: ${LOG_LEVEL}
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       POSTRGRES_DB: ${POSTGRES_DB}
       POSTGRES_HOST: ${POSTGRES_HOST}
       POSTGRES_PORT: ${POSTGRES_PORT}
-      PYTHONIOENCODING: utf-8 # Required to decode correctly the CSV files
+      PYTHONIOENCODING: utf-8
     env_file:
       - .env
     volumes:
