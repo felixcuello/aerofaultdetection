@@ -1,13 +1,22 @@
+import os
 import sys
+import logging
 
 from lib.pgdb import db_conn
-from lib.npg1 import process_npg1
+from lib.csv import process_csv
+
+#  Setting the log level
+# ---------------------------------------------------------
+os_log_level = os.environ['LOG_LEVEL'] if os.environ['LOG_LEVEL'] != None else 'INFO'
+logging.root.setLevel(os_log_level)
+
 
 #  Hash with the available ETLs
 # ---------------------------------------------------------
 etl = {
-    "npg1": lambda file_name : process_npg1(db_conn, file_name)
+    "csv": lambda file_name : process_csv(db_conn, file_name)
 }
+
 
 #  Usage format
 # ---------------------------------------------------------
