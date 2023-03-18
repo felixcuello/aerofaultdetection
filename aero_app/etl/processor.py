@@ -2,8 +2,8 @@ import os
 import sys
 import logging
 
-from lib.pgdb import db_conn
-from lib.csv import process_csv
+from lib.db.conn import db_conn
+from lib.csv_parser import CsvParser
 
 #  Setting the log level
 # ---------------------------------------------------------
@@ -14,7 +14,7 @@ logging.root.setLevel(os_log_level)
 #  Hash with the available ETLs
 # ---------------------------------------------------------
 etl = {
-    "csv": lambda file_name : process_csv(db_conn, file_name)
+    "csv": lambda file_name : CsvParser(db_conn).process_csv(file_name)
 }
 
 
