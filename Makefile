@@ -35,3 +35,7 @@ db_delete:
 
 db_drop: down
 	rm -rf aero_db
+
+# -- This command initiates the docker agent in MacOS
+macos_docker_up:
+	open -a Docker
