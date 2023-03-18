@@ -1,1 +1,1 @@
-DROP TABLE device;
+DROP TABLE sensor;
