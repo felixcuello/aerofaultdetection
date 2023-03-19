@@ -29,9 +29,11 @@ db_shell:
 
 db_create:
 	docker compose exec -T aero_db psql -U aero_admin aero_db < ./sql/create_aero_sensor.sql
+	docker compose exec -T aero_db psql -U aero_admin aero_db < ./sql/create_aero_sample.sql
 
 db_drop:
 	docker compose exec -T aero_db psql -U aero_admin aero_db < ./sql/drop_aero_sensor.sql
+	docker compose exec -T aero_db psql -U aero_admin aero_db < ./sql/drop_aero_sample.sql
 
 db_destroy: down
 	rm -rf aero_db
