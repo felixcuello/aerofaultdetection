@@ -1,1 +1,1 @@
-DROP TABLE sensor;
+DROP TABLE aero_sensor;
