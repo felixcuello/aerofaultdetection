@@ -23,3 +23,15 @@ The most common options are:
 *** Application
 
 - ```make testshell``` : To get a bash shell inside the application container
+
+** Logging Levels
+
+- *DEBUG*: Non mandatory, non relevant logs, that are only useful for developers.
+
+- *INFO*: Relevant logs that can be useful for tracing problems.
+
+- *WARNING*: Errors that can be recovered.
+
+- *ERROR*: Errors that cannot be recovered and could cause potential loss of information.
+
+- *CRITICAL*: Errors that cannot be recovered and cause a loss of information or lead to a program end.
