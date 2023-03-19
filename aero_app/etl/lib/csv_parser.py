@@ -8,6 +8,7 @@ class CsvParser:
         self.db_connection = db_connection
         self.delimiter = delimiter
         self.sensor_uuids = {}
+        self.sample_type_uuids = {}
 
     #  Process the CSV header since it's complex
     # ---------------------------------------------------------------
@@ -47,6 +48,8 @@ class CsvParser:
         #  Process all samples in that row (each column)
         # ------------------------------------------------------------
         for col in range(2, len(header_info)):
+            cursor = self.db_connection.cursor()
+
             sensor_id = header_info[col]['sensor_id']
             sensor_type = header_info[col]['sensor_type']
             sensor_seq = header_info[col]['sensor_seq']
@@ -60,38 +63,45 @@ class CsvParser:
                 self.sensor_uuids[sensor_id] = sensor_uuid
 
                 logging.debug('Creating a new sensor => "{} {}" [{}]'.format(sensor_type, sensor_seq, sensor_uuid))
-                cursor = self.db_connection.cursor()
-                cursor.execute("INSERT INTO sensor (uuid, datalogger_id, sensor_type, sensor_seq)"
-                               " VALUES "
-                               "(%s, %s, %s, %s)", (sensor_uuid, datalogger_id, sensor_type, sensor_seq))
-                self.db_connection.commit()
+                cursor.execute(
+                    "INSERT INTO aero_sensor (uuid, datalogger_id, sensor_type, sensor_seq)"
+                    " VALUES "
+                    "(%s, %s, %s, %s)",
+                    (sensor_uuid, datalogger_id, sensor_type, sensor_seq)
+                )
             else:
                 sensor_uuid = self.sensor_uuids[sensor_id]
 
-            # match sensor_type:
-            #     case "anemometro":
-            #         print("")
-            #     case "kpc":
-            #         print("")
-            #     case "barometro":
-            #         print("")
-            #     case "veleta":
-            #         print("")
-            #     case "a":
-            #         print("")
-            #     case "c":
-            #         print("")
-            #     case "d":
-            #         print("")
-            #     case "i":
-            #         print("")
-            #     case "t":
-            #         print("")
-            #     case "v":
-            #         print("")
-            #     case _:
-            #         logging.critical("!!!!!! Unknown type => {}".format(type))
-            #         raise("Unknown type")
+            #  Create new sample type if required
+            # ---------------------------------------------------------
+            sample_type = header_info[col]['measurement_type']
+            sample_unit = header_info[col]['measurement_unit']
+            sample_type_id = "{} {}".format(sample_type, sample_unit)
+            sample_value = None if csv_row[col] == 'None' else float(csv_row[col])
+            if sample_type_id not in self.sample_type_uuids.keys():
+                sample_type_uuid = str(uuid.uuid4())
+                self.sample_type_uuids[sample_type_id] = sample_type_uuid
+
+                logging.debug('Creating a new sample type => "{} {}"'.format(sample_type, sample_unit))
+                cursor.execute(
+                    "INSERT INTO aero_sample_type(uuid, sensor_uuid, sample_type, sample_unit)"
+                    " VALUES "
+                    "(%s, %s, %s, %s)",
+                    (sample_type_uuid, sensor_uuid, sample_type, sample_unit)
+                )
+            else:
+                sample_type_uuid = self.sample_type_uuids[sample_type_id]
+
+            #  Create new sample for this column
+            # ---------------------------------------------------------
+            cursor.execute(
+                "INSERT INTO aero_sample (datetime, sample_type_uuid, sample_value)"
+                " VALUES "
+                "(%s, %s, %s)",
+                (datetime, sample_type_uuid, sample_value)
+            )
+
+            self.db_connection.commit()
 
 
     #  Process the CSV file
