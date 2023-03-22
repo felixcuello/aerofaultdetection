@@ -3,6 +3,8 @@ import csv
 import uuid
 import logging
 
+from datetime import datetime
+
 class CsvParser:
     def __init__(self, db_connection, delimiter = ','):
         self.db_connection = db_connection
@@ -43,7 +45,7 @@ class CsvParser:
     # ---------------------------------------------------------------
     def __process_csv_row(self, csv_row, header_info):
         datalogger_id = csv_row[0]
-        datetime = csv_row[1]
+        datetime_string = csv_row[1]
 
         #  Process all samples in that row (each column)
         # ------------------------------------------------------------
@@ -94,11 +96,14 @@ class CsvParser:
 
             #  Create new sample for this column
             # ---------------------------------------------------------
+            date_obj = datetime.strptime(datetime_string, "%d/%m/%Y %H:%M")
+            english_datetime_string = datetime.strftime(date_obj, "%m/%d/%Y %H:%M")
+
             cursor.execute(
                 "INSERT INTO aero_sample (datetime, sample_type_uuid, sample_value)"
                 " VALUES "
                 "(%s, %s, %s)",
-                (datetime, sample_type_uuid, sample_value)
+                (english_datetime_string, sample_type_uuid, sample_value)
             )
 
             self.db_connection.commit()

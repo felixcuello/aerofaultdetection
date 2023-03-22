@@ -35,3 +35,17 @@ The most common options are:
 - *ERROR*: Errors that cannot be recovered and could cause potential loss of information.
 
 - *CRITICAL*: Errors that cannot be recovered and cause a loss of information or lead to a program end.
+
+* Data
+
+- T: Temperatura del datalogger
+- A: Sensores analógicos
+  - KPC
+  - Barómetro
+  - Anemómetro vertical (si lo tuviera)
+    - Veleta
+- C: COMMs
+  - Anemómetro
+- D: Sensores Digitales
+  - Veleta
+- Count: Cantidad de medificiones
