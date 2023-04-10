@@ -1,6 +1,7 @@
 # Project specific
 aero_db/
 aero_app/data/
+.DS_Store
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
