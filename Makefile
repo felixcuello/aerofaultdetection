@@ -1,6 +1,7 @@
 all: build up
 
-build: build up
+build: build
+	docker compose build --no-cache
 
 shell:
 	docker compose exec aero_app bash
@@ -13,6 +14,12 @@ up:
 
 down:
 	docker compose down
+
+# ------------------------------------------------------------------
+#  RUN TESTS
+# ------------------------------------------------------------------
+test:
+	docker compose run aero_app pytest
 
 # ------------------------------------------------------------------
 #  DATABASE COMMANDS

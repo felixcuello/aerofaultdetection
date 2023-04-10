@@ -5,3 +5,4 @@ ipdb == 0.13.9              # For Python debugging
 psycopg2-binary === 2.9.3   # For postgresql
 matplotlib == 3.6.2         # For plot
 seaborn == 0.12.1           # For statistical visualization
+pytest == 7.2.2             # Required for testing
