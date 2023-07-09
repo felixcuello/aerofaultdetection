@@ -6,7 +6,10 @@ from datetime import datetime
 class CSV:
     def __init__(self, csv_file):
         logging.debug("Reading {}".format(csv_file))
-        self.df = pd.read_csv(csv_file, sep=',')
+        try:
+            self.df = pd.read_csv(csv_file, sep=',')
+        except pd.errors.ParseErrors as e:
+            print(f"Error on line {e.lineno}: {e}")
 
         #  Apply conversion functions to the columns that require a particular adjustment
         # --------------------------------------------------------------------------------------

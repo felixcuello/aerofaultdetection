@@ -6,6 +6,9 @@ build: build
 shell:
 	docker compose exec aero_app bash
 
+attempt_1:
+	docker-compose run --entrypoint python3 aero_app scripts/attempt_1_isolation_forest.py data/D214102-2023.csv
+
 testshell:
 	docker compose run -p 80:80 aero_app bash
 
