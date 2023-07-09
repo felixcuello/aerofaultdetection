@@ -35,7 +35,7 @@ df['rmse'] = df.apply(calculate_rmse, axis=1)
 
 
 # --[Add a column to indicate if the row is an anomaly]-------------------------
-df['is_anomaly'] = np.where(df['rmse'] >= 3, 1, 0) # 2 is an arbitrary threshold
+df['is_anomaly'] = np.where(df['rmse'] >= 2, 1, 0) # 2 is an arbitrary threshold
 
 
 # --[Split the data into training and test sets]--------------------------------
