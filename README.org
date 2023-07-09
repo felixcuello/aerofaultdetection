@@ -1,9 +1,15 @@
 * Aero Fault Detection
 
-** Introduction
-This is an AI/ML project to detect faulty sensors on wind turbines.
+* Introduction
+AeroFaultDetection is an AI/ML project that will try to determine if it is possible to detect problems in weather sensors used in wind turbines fields.
 
-** Setup
+The information comes in the form of time series where we have samples of a given data every 10 minutes and we have to detect if the sensors are having troubles gettinf the information by analyzing the data in them.
+
+Time series and anomaly detection is a very interesting topic in Machine Learning, and this project tries to build an application to detect problems in these weather stations.
+
+* Setup
+
+** Containers
 Everything is set up inside the ```Makefile```. So you have to look inside that file for the options.
 
 First copy the ```.env.sample``` into the ```.env``` and adjust all the environment variables (*DO NOT LEAVE THE DEFAULTS*).
@@ -24,7 +30,7 @@ The most common options are:
 
 - ```make testshell``` : To get a bash shell inside the application container
 
-** Logging Levels
+**** Logging Levels
 
 - *DEBUG*: Non mandatory, non relevant logs, that are only useful for developers.
 
@@ -36,7 +42,7 @@ The most common options are:
 
 - *CRITICAL*: Errors that cannot be recovered and cause a loss of information or lead to a program end.
 
-* Data
+* Data analysis
 
 - T: Temperatura del datalogger
 - A: Sensores analógicos
@@ -49,3 +55,18 @@ The most common options are:
 - D: Sensores Digitales
   - Veleta
 - Count: Cantidad de medificiones
+
+
+* Machine Learning
+** Introduction
+Working in machine learning usually requires several iterations, tests, trial, errors and refinements.
+
+Even though we use ```git``` that could be used to version scripts, we would like to have some sort of iteration on the things we have tested to show different results in the future and to be able to compare different versions we used over time (and/or if we tested different models).
+
+Below you'll find the
+
+** Helper Libraries
+Since we are going to repeat several things in our scripts, we'll create some helper libraries to group the functionalities.
+
+** Attempts
+*** Attempt \#1: Isolation Forest
