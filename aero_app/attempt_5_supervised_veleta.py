@@ -19,8 +19,8 @@ df = pd.read_csv(input_csv_file)
 
 # --[Get only the anemometer readings]-----------------------------------------
 anemometer_columns = []
-for i in range(1,8):
-    column = 'ANEMOMETRO {};wind_speed;Avg (m/s)'.format(i)
+for i in range(1,5):
+    column = 'VELETA {};wind_direction;Avg (°)'.format(i)
     anemometer_columns.append(column)
 anemometer_data = df[anemometer_columns]
 
@@ -30,9 +30,19 @@ df['average'] = df[anemometer_columns].mean(axis=1)
 def calculate_rmse(row):
     rmse = 0
     for col in anemometer_columns:
-        rmse += (row[col] - row['average']) ** 2
+        print("{} << row[{}]".format(row[col], col))
+        print("{} << row['average']".format(row['average']))
+        print("{} << rmse".format(rmse))
+        print("rmse += ({} - {}) ** 2".format(row[col], row['average']))
+        row[col].replace('None', 0)
+        a = float(row[col]) - float(row['average'])
+        print(">>>>>>>>> a={}".format(a))
+        rmse += (a*a)
+        print(">>>>>>>>> result rmse={}".format(rmse))
+
     return np.sqrt(rmse / len(anemometer_columns))
 df['rmse'] = df.apply(calculate_rmse, axis=1)
+import ipdb; ipdb.set_trace()
 
 # --[Add a column to indicate if the row is an anomaly]-------------------------
 df['is_anomaly'] = np.where(df['rmse'] >= 2, 1, 0) # 2 is an arbitrary threshold
@@ -70,14 +80,10 @@ df['anomaly_pred'] = model.predict(X)
 
 # --[plot the anemometer readings]---------------------------------------------
 plt.figure(figsize=(10,6))
-plt.plot(df['datetime'], df['ANEMOMETRO 1;wind_speed;Avg (m/s)'], color='green', label='ANEMO 1')
-plt.plot(df['datetime'], df['ANEMOMETRO 2;wind_speed;Avg (m/s)'], color='gold', label='ANEMO 2')
-plt.plot(df['datetime'], df['ANEMOMETRO 3;wind_speed;Avg (m/s)'], color='azure', label='ANEMO 3')
-plt.plot(df['datetime'], df['ANEMOMETRO 4;wind_speed;Avg (m/s)'], color='magenta', label='ANEMO 4')
-plt.plot(df['datetime'], df['ANEMOMETRO 5;wind_speed;Avg (m/s)'], color='cadetblue', label='ANEMO 5')
-plt.plot(df['datetime'], df['ANEMOMETRO 6;wind_speed;Avg (m/s)'], color='lime', label='ANEMO 6')
-plt.plot(df['datetime'], df['ANEMOMETRO 7;wind_speed;Avg (m/s)'], color='cyan', label='ANEMO 7')
-plt.plot(df['datetime'], df['ANEMOMETRO 8;wind_speed;Avg (m/s)'], color='lavender', label='ANEMO 8')
+plt.plot(df['datetime'], df['VELETA 1;wind_speed;Avg (m/s)'], color='green', label='ANEMO 1')
+plt.plot(df['datetime'], df['VELETA 2;wind_speed;Avg (m/s)'], color='gold', label='ANEMO 2')
+plt.plot(df['datetime'], df['VELETA 3;wind_speed;Avg (m/s)'], color='azure', label='ANEMO 3')
+plt.plot(df['datetime'], df['VELETA 4;wind_speed;Avg (m/s)'], color='magenta', label='ANEMO 4')
 
 
 
