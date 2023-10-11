@@ -11,10 +11,11 @@ plot:
 	@echo "make plot_i            # Plots channel I"
 	@echo "make plot_v            # Plots channel V"
 	@echo ""
-	@echo "plot attempt_1         # Plots an isolation forest approach"
-	@echo "plot attempt_2         # Plots a Super Vector Machine approach (#1)"
-	@echo "plot attempt_3         # Plots a Super Vector Machine approach (#2)"
-	@echo "plot attempt_4         # Plots a Random Forest approach"
+	@echo "plot_attempt_1         # Plots an isolation forest approach"
+	@echo "plot_attempt_2         # Plots a Super Vector Machine approach (#1)"
+	@echo "plot_attempt_3         # Plots a Super Vector Machine approach (#2)"
+	@echo "plot_attempt_4         # Plots a Random Forest approach"
+	@echo "plot_attempt_6         # Plots a K-means approach"
 	@echo ""
 	@echo "train                  # Trains the model"
 	@echo ""
@@ -57,4 +58,7 @@ plot_attempt_3:
 
 plot_attempt_4:
 	python3 attempt_4_supervised.py data/D214102-2023.csv
+
+plot_attempt_6:
+	python3 attempt_6_kmeans.py data/D214102-2023.csv
 
