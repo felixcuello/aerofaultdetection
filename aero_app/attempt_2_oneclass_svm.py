@@ -1,4 +1,5 @@
 # --[libraries]----------------------------------------------------------------
+import time
 import sys
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -32,17 +33,23 @@ for column in anemometer_columns:
 
 
 # --[Normalize the data]-------------------------------------------------------
+start_time = time.time()
 scaler = StandardScaler()
 scaled_data = scaler.fit_transform(df[anemometer_columns + [column+'_diff' for column in anemometer_columns]])
+print("[INFO] Normalization time: {:.2f} seconds".format(time.time() - start_time))
 
 
 # --[Train the model]----------------------------------------------------------
+start_time = time.time()
 model = OneClassSVM(nu=0.05)  # The nu parameter is similar to the contamination parameter in the Isolation Forest model. Adjust this as needed.
 model.fit(scaled_data)
+print("[INFO] Training time: {:.2f} seconds".format(time.time() - start_time))
 
 
 # --[Predict the anomalies]----------------------------------------------------
+start_time = time.time()
 df['anomaly'] = model.predict(scaled_data)
+print("[INFO] Prediction time: {:.2f} seconds".format(time.time() - start_time))
 
 
 # --[Plot the results]---------------------------------------------------------
@@ -51,4 +58,3 @@ plt.plot(df['datetime'], df['ANEMOMETRO 1;wind_speed;Avg (m/s)'], color='blue', 
 plt.plot(df['datetime'], df['anomaly'], color='red', label = 'anomaly')
 plt.legend()
 plt.show()
-

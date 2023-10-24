@@ -1,5 +1,6 @@
 # --[libraries]----------------------------------------------------------------
 import sys
+import time
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -33,24 +34,29 @@ def calculate_rmse(row):
     return np.sqrt(rmse / len(anemometer_columns))
 df['rmse'] = df.apply(calculate_rmse, axis=1)
 
-
 # --[Add a column to indicate if the row is an anomaly]-------------------------
 df['is_anomaly'] = np.where(df['rmse'] >= 2, 1, 0) # 2 is an arbitrary threshold
 
 
 # --[Split the data into training and test sets]--------------------------------
-X = df[['average', 'rmse']]
+start_time = time.time()
+X = df[anemometer_columns]
 y = df['is_anomaly']
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42)
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=111)
+print("[INFO] Splitting time: {:.2f} seconds".format(time.time() - start_time))
 
 
 # --[Train the model]----------------------------------------------------------
+start_time = time.time()
 model = RandomForestClassifier(n_estimators=100, random_state=42)
 model.fit(X_train, y_train)
+print("[INFO] Training time: {:.2f} seconds".format(time.time() - start_time))
 
 
 # --[Predict the anomalies in the test set]------------------------------------
+start_time = time.time()
 y_pred = model.predict(X_test)
+print("[INFO] Prediction time: {:.2f} seconds".format(time.time() - start_time))
 
 
 # --[Get the model accuracy]---------------------------------------------------

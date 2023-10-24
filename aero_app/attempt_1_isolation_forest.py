@@ -1,4 +1,5 @@
 import sys
+import time
 import pandas as pd
 import matplotlib.pyplot as plt
 from sklearn.ensemble import IsolationForest
@@ -23,17 +24,17 @@ anemometer_data = df[anemometer_columns]
 
 
 # --[Train the model]----------------------------------------------------------
-#model = IsolationForest(
-#        contamination=0.1 # Parameter used to help estimate the number of outliers in the dataset. Adjust this as needed.
-#        )
+start_time = time.time()
 model = IsolationForest()
 model.fit(anemometer_data)
+print("[INFO] Training time: {} seconds".format(time.time() - start_time)) 
 
 
 
 # --[Predict the anomalies]-----------------------------------------------------
+start_time = time.time()
 df['anomaly'] = model.predict(anemometer_data)
-
+print("[INFO] Prediction time: {} seconds".format(time.time() - start_time))
 
 
 # Visualize the results

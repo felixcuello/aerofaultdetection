@@ -1,4 +1,5 @@
 # --[libraries]----------------------------------------------------------------
+import time
 import sys
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -31,17 +32,23 @@ for column in anemometer_columns:
     df[column+'_diff_min'] = (2 * df[column]) - df[other_columns].min(axis=1)
 
 # --[data scaling]-------------------------------------------------------------
+start_time = time.time()
 scaler = StandardScaler()
 scaled_data = scaler.fit_transform(df[anemometer_columns + [column+'_diff_min' for column in anemometer_columns]])
+print("[INFO] Normalization time: {:.2f} seconds".format(time.time() - start_time))
 
 
 # --[train the model]----------------------------------------------------------
+start_time = time.time()
 model = OneClassSVM(nu=0.25)  # The nu parameter is similar to the contamination parameter in the Isolation Forest model. Adjust this as needed.
 model.fit(scaled_data)
+print("[INFO] Training time: {:.2f} seconds".format(time.time() - start_time))
 
 
 # --[predict anomalies]--------------------------------------------------------
+start_time = time.time()
 df['anomaly'] = model.predict(scaled_data)
+print("[INFO] Prediction time: {:.2f} seconds".format(time.time() - start_time))
 
 
 # --[plot the results]---------------------------------------------------------
