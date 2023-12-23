@@ -1,6 +1,6 @@
 # Project specific
 aero_db/
-aero_app/data/
+paper_investigation/data/*
 .DS_Store
 
 # Byte-compiled / optimized / DLL files
