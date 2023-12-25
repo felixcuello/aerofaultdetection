@@ -11,6 +11,7 @@
 #  1. Use K-means to find the "potential" outliers
 #  2. Determine if it's an outlier by calculating an RMSE between the data and the
 #     average.
+#  3. Print a little report with the anomalies found.
 #
 # -----------------------------------------------------------------------------
 import re
@@ -57,7 +58,7 @@ def main():
 
     log_info("Found {} columns matching the columns to be analyzed".format(number_of_devices))
 
-# --[Get only the anemometer readings]-----------------------------------------
+# --[Get only the device readings]-----------------------------------------
     device_columns = []
     for i in range(1, number_of_devices):
         column = input_column.format(i)
@@ -79,7 +80,7 @@ def main():
     device_data = df[device_columns]
     device_data['anomaly'] = -1
 
-# Iterate over the data and find the anomalies for each anemometer
+# Iterate over the data and find the anomalies for each device
     log_info("STEP #1 - Finding the anomalies (K-means)...")
     number_of_rows = len(device_data.index)
     for index, row in device_data.iterrows():
@@ -141,12 +142,11 @@ def main():
 #
 
     log_info("STEP #2 - Getting actual anomalies")
-    # Get only the anemometer readings
+    # Get only the device readings
     device_readings = []
     for i in range(1, number_of_devices):
-        column = 'ANEMOMETRO {};wind_speed;Avg (m/s)'.format(i)
+        column = input_column.format(i)
         device_readings.append(column)
-    device_data = df[device_readings]
 
 
     # Calculate the RMSE for each row
@@ -185,7 +185,7 @@ def main():
                  linewidth=0.3,
                  alpha=0.75)
 
-    # [plot and point out the anomalies]-----------------------------------------
+    # [plot and point out the anomalies]---------------------------------------
     anomalies = df[df['is_anomaly'] == 1]
     plt.plot(df['datetime'],
              df['is_anomaly'],
@@ -199,6 +199,24 @@ def main():
     plt.savefig(image_name, dpi=1200)
 
 
+# --[STEP 3: Print a little report with the anomalies found]-------------------
+#
+# This report tries to aglutinate all the information found in the two previous
+# steps and print them out to STDOUT.
+#
+
+    devices_anomalies = {}
+    for i in range(0, number_of_devices):
+        devices_anomalies[i] = 0
+
+    log_info("STEP #3 - Printing the report...")
+    for i in range(0, number_of_rows):
+        if df.loc[i, 'is_anomaly'] == 1:
+            devices_anomalies[device_data.loc[i, 'anomaly']] += 1
+
+    for i in range(0, number_of_devices):
+        column = input_column.format(i)
+        log_info("Device {} ({}): {} anomalies found".format(i, column, devices_anomalies[i]))
 
 # Helper method to calculate the RMSE
 def log_info(string):
