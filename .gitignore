@@ -2,6 +2,8 @@
 aero_db/
 paper_investigation/data/*
 .DS_Store
+*.png
+data/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
