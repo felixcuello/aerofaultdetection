@@ -33,6 +33,8 @@ def main():
         print("\nUsage: python <input file> <column to be analyzed>".format(sys.argv[0]))
         sys.exit()
 
+    # colors used for plots
+    colors = ['blue', 'green', 'yellow', 'orange', 'purple', 'pink', 'brown', 'lavender', 'cyan', 'magenta', 'black']
 
 # --[Read the input CSV file]--------------------------------------------------
 # low_memory=False is used to avoid the warning: DtypeWarning: Columns (1,2,3) have mixed types
@@ -78,7 +80,7 @@ def main():
     device_data['anomaly'] = -1
 
 # Iterate over the data and find the anomalies for each anemometer
-    log_info("Finding the anomalies (K-means)...")
+    log_info("STEP #1 - Finding the anomalies (K-means)...")
     number_of_rows = len(device_data.index)
     for index, row in device_data.iterrows():
         if index % 1000 == 0: # Log every 1000 rows
@@ -110,15 +112,26 @@ def main():
     plt.figure(figsize=(10,6))
     plt.title('Anomaly Candidates')
 
-    colors = ['blue', 'green', 'yellow', 'orange', 'purple', 'pink', 'brown', 'gray', 'cyan', 'magenta', 'black']
-    np.random.shuffle(colors)
     for i in range(1, number_of_devices):
         column = input_column.format(i)
-        plt.plot(device_data['datetime'], device_data[column], color=colors[i], label = column)
+        plt.plot(device_data['datetime'],
+                 device_data[column],
+                 color=colors[i],
+                 label = column,
+                 linewidth=0.3,
+                 alpha=0.75)
 
-    plt.plot(device_data['datetime'], device_data['anomaly'], color='red', label = 'device number')
+    # plot and point out anomalies
+    plt.plot(device_data['datetime'],
+             device_data['anomaly'],
+             color='red',
+             label = 'Device # with anomaly',
+             linewidth=0.4,
+             alpha=1)
+
+    # add legend and save graphic
     plt.legend()
-    plt.savefig(image_name)
+    plt.savefig(image_name, dpi=1200)
 
 
 # --[STEP 2: Determine if it's an outlier by calculating an RMSE]---------------
@@ -126,77 +139,68 @@ def main():
 # For the step two we have introduced an ecuation similar to the RMSE to determine
 # if the outliers calculated in STEP #1 are real outliers or false positives.
 #
-# --[Get only the anemometer readings]-----------------------------------------
-    # device_readings = []
-    # for i in range(1, number_of_devices):
-    #     column = 'ANEMOMETRO {};wind_speed;Avg (m/s)'.format(i)
-    #     device_readings.append(column)
-    # device_data = df[device_readings]
+
+    log_info("STEP #2 - Getting actual anomalies")
+    # Get only the anemometer readings
+    device_readings = []
+    for i in range(1, number_of_devices):
+        column = 'ANEMOMETRO {};wind_speed;Avg (m/s)'.format(i)
+        device_readings.append(column)
+    device_data = df[device_readings]
 
 
-# --# [Calculate the RMSE for each row]------------------------------------------
-    # df['average'] = df[device_readings].mean(axis=1)
-    # def calculate_rmse(row):
-    #     rmse = 0
-    #     for col in device_readings:
-    #         rmse += (row[col] - row['average']) ** 2
-    #     return np.sqrt(rmse / len(device_readings))
-    # df['rmse'] = df.apply(calculate_rmse, axis=1)
+    # Calculate the RMSE for each row
+    df['average'] = df[device_readings].mean(axis=1)
 
-# --# [Add a column to indicate if the row is an anomaly]-------------------------
-    # df['is_anomaly'] = np.where(df['rmse'] >= 2, 1, 0) # 2 is an arbitrary threshold
+    # This calculates the RMSE for a given row
+    def calculate_rmse(row):
+        rmse = 0
+        for col in device_readings:
+            rmse += (row[col] - row['average']) ** 2
+        return np.sqrt(rmse / len(device_readings))
 
+    df['rmse'] = df.apply(calculate_rmse, axis=1)
 
-# --# [Split the data into training and test sets]--------------------------------
-    # start_time = time.time()
-    # X = df[device_readings]
-    # y = df['is_anomaly']
-    # X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=111)
-    # print("[INFO] Splitting time: {:.2f} seconds".format(time.time() - start_time))
+    # Add a column to indicate if the row is an anomaly
+    #
+    # Note:
+    #   We have found (empirically) that a threshold of 2 is a good value to
+    #   determine if a row is an anomaly or not. However, this value could be
+    #   changed if needed.
+    #
+    anomaly_threshold = 2
+    df['is_anomaly'] = np.where(df['rmse'] >= anomaly_threshold, 1, 0) # 2 is an arbitrary threshold
 
+    # Save the anomalies to an image
+    image_name = 'anomalies_detected.png'
+    log_info("Saving devices with errors to '{}'...".format(image_name))
+    plt.figure(figsize=(10,6))
 
-# --# [Train the model]----------------------------------------------------------
-    # start_time = time.time()
-    # model = RandomForestClassifier(n_estimators=100, random_state=42)
-    # model.fit(X_train, y_train)
-    # print("[INFO] Training time: {:.2f} seconds".format(time.time() - start_time))
+    for i in range(1, number_of_devices):
+        column = input_column.format(i)
+        plt.plot(df['datetime'],
+                 df[column],
+                 color=colors[i],
+                 label = column,
+                 linewidth=0.3,
+                 alpha=0.75)
 
+    # [plot and point out the anomalies]-----------------------------------------
+    anomalies = df[df['is_anomaly'] == 1]
+    plt.plot(df['datetime'],
+             df['is_anomaly'],
+             color='red',
+             label = 'Anomaly Detected',
+             linewidth=0.4,
+             alpha=1)
 
-# --# [Predict the anomalies in the test set]------------------------------------
-    # start_time = time.time()
-    # y_pred = model.predict(X_test)
-    # print("[INFO] Prediction time: {:.2f} seconds".format(time.time() - start_time))
-
-
-# --# [Get the model accuracy]---------------------------------------------------
-    # accuracy = (y_pred == y_test).mean()
-    # print(f'Accuracy: {accuracy}')
-
-
-# --# [predict anomalies]--------------------------------------------------------
-    # df['anomaly_pred'] = model.predict(X)
-
-
-# --# [plot the anemometer readings]---------------------------------------------
-    # plt.figure(figsize=(10,6))
-    # plt.plot(df['datetime'], df['ANEMOMETRO 1;wind_speed;Avg (m/s)'], color='green', label='ANEMO 1')
-    # plt.plot(df['datetime'], df['ANEMOMETRO 2;wind_speed;Avg (m/s)'], color='gold', label='ANEMO 2')
-    # plt.plot(df['datetime'], df['ANEMOMETRO 3;wind_speed;Avg (m/s)'], color='azure', label='ANEMO 3')
-    # plt.plot(df['datetime'], df['ANEMOMETRO 4;wind_speed;Avg (m/s)'], color='magenta', label='ANEMO 4')
-    # plt.plot(df['datetime'], df['ANEMOMETRO 5;wind_speed;Avg (m/s)'], color='cadetblue', label='ANEMO 5')
-    # plt.plot(df['datetime'], df['ANEMOMETRO 6;wind_speed;Avg (m/s)'], color='lime', label='ANEMO 6')
-    # plt.plot(df['datetime'], df['ANEMOMETRO 7;wind_speed;Avg (m/s)'], color='cyan', label='ANEMO 7')
-    # plt.plot(df['datetime'], df['ANEMOMETRO 8;wind_speed;Avg (m/s)'], color='lavender', label='ANEMO 8')
+    # add legend and save graphic
+    plt.legend()
+    plt.savefig(image_name, dpi=1200)
 
 
 
-# --# [plot and point out the anomalies]-----------------------------------------
-    # anomalies = df[df['is_anomaly'] == 1]
-    # plt.plot(df['datetime'], df['is_anomaly'], color='red', label = 'is_anomaly')
-    # plt.legend()
-    # plt.show()
-
-
+# Helper method to calculate the RMSE
 def log_info(string):
     print("[INFO] {}".format(string))
 
