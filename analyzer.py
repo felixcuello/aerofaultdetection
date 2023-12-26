@@ -45,6 +45,19 @@ def main():
     input_column = sys.argv[2]
     df = pd.read_csv(input_csv_file, low_memory=False)
 
+    # 🟥 IMPORTANT 🟥
+    #
+    # THIS DIDN'T WORK, BUT I LEAVE THIS HERE SINCE WE WILL HAVE TO GO BACK TO THIS
+    # AT SOME POINT. THE PROBLEM IS THAT THE DATA IS NOT CLEANED PROPERLY AND
+    # SOME OF THE CODE BELOW MIGHT NOT WORK IF ALL THE COLUMNS ARE NOT FLOATS OR
+    # HAVE MISSING DATA
+    #
+    # NaN values shouldn't be replaced with 0, because 0 could be a valid value.
+    # None values should be replaced with 0... not 100% correct, but otherwise it fails.
+    # log_info("Cleaning the data (converting NaN and None values to 0)...")
+    # df.replace('None', 0.0, inplace=True) # Replace None with 0
+    # df.fillna(0.0, inplace=True) # Replace NaN with 0
+
     # Calculate the number of columns matchig the input_column
     number_of_devices = 0
     for column in df.columns:
@@ -60,7 +73,7 @@ def main():
 
 # --[Get only the device readings]-----------------------------------------
     device_columns = []
-    for i in range(1, number_of_devices):
+    for i in range(1, number_of_devices + 1):
         column = input_column.format(i)
         device_columns.append(column)
 
@@ -113,22 +126,25 @@ def main():
     plt.figure(figsize=(10,6))
     plt.title('Anomaly Candidates')
 
-    for i in range(1, number_of_devices):
+    for i in range(1, number_of_devices + 1):
         column = input_column.format(i)
-        plt.plot(device_data['datetime'],
-                 device_data[column],
-                 color=colors[i],
-                 label = column,
-                 linewidth=0.3,
-                 alpha=0.75)
+        try:
+            plt.plot(device_data['datetime'],
+                     device_data[column],
+                     color = colors[i],
+                     label = column,
+                     linewidth = 0.3,
+                     alpha = 0.75)
+        except:
+            import ipdb; ipdb.set_trace()
 
     # plot and point out anomalies
     plt.plot(device_data['datetime'],
              device_data['anomaly'],
-             color='red',
+             color = 'red',
              label = 'Device # with anomaly',
-             linewidth=0.4,
-             alpha=1)
+             linewidth = 0.4,
+             alpha = 1)
 
     # add legend and save graphic
     plt.legend()
@@ -144,7 +160,7 @@ def main():
     log_info("STEP #2 - Getting actual anomalies")
     # Get only the device readings
     device_readings = []
-    for i in range(1, number_of_devices):
+    for i in range(1, number_of_devices + 1):
         column = input_column.format(i)
         device_readings.append(column)
 
@@ -176,7 +192,7 @@ def main():
     log_info("Saving devices with errors to '{}'...".format(image_name))
     plt.figure(figsize=(10,6))
 
-    for i in range(1, number_of_devices):
+    for i in range(1, number_of_devices + 1):
         column = input_column.format(i)
         plt.plot(df['datetime'],
                  df[column],
@@ -206,15 +222,18 @@ def main():
 #
 
     devices_anomalies = {}
-    for i in range(0, number_of_devices):
+    for i in range(0, number_of_devices + 1):
         devices_anomalies[i] = 0
 
     log_info("STEP #3 - Printing the report...")
     for i in range(0, number_of_rows):
         if df.loc[i, 'is_anomaly'] == 1:
-            devices_anomalies[device_data.loc[i, 'anomaly']] += 1
+            try:
+                devices_anomalies[device_data.loc[i, 'anomaly']] += 1
+            except:
+                import ipdb; ipdb.set_trace()
 
-    for i in range(0, number_of_devices):
+    for i in range(0, number_of_devices + 1):
         column = input_column.format(i)
         log_info("Device {} ({}): {} anomalies found".format(i, column, devices_anomalies[i]))
 

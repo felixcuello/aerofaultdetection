@@ -21,6 +21,10 @@ plot:
 ifndef $(DATA)
 FILE_NAME := ./data/D214102-2023.csv
 COLUMN_NAME := ANEMOMETRO {};wind_speed;Avg (m/s)
+# COLUMN_NAME := VELETA {};wind_direction;Avg (°)
+# COLUMN_NAME := A{};channel;Avg (V)
+# COLUMN_NAME := C{};channel;Avg (I)
+# COLUMN_NAME := D{};channel;Avg ()
 endif
 
 install_python_libraries:
