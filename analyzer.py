@@ -128,15 +128,12 @@ def main():
 
     for i in range(1, number_of_devices + 1):
         column = input_column.format(i)
-        try:
-            plt.plot(device_data['datetime'],
-                     device_data[column],
-                     color = colors[i],
-                     label = column,
-                     linewidth = 0.3,
-                     alpha = 0.75)
-        except:
-            import ipdb; ipdb.set_trace()
+        plt.plot(device_data['datetime'],
+                 device_data[column],
+                 color = colors[i],
+                 label = column,
+                 linewidth = 0.3,
+                 alpha = 0.75)
 
     # plot and point out anomalies
     plt.plot(device_data['datetime'],
@@ -220,7 +217,6 @@ def main():
 # This report tries to aglutinate all the information found in the two previous
 # steps and print them out to STDOUT.
 #
-
     devices_anomalies = {}
     for i in range(0, number_of_devices + 1):
         devices_anomalies[i] = 0
@@ -228,14 +224,12 @@ def main():
     log_info("STEP #3 - Printing the report...")
     for i in range(0, number_of_rows):
         if df.loc[i, 'is_anomaly'] == 1:
-            try:
-                devices_anomalies[device_data.loc[i, 'anomaly']] += 1
-            except:
-                import ipdb; ipdb.set_trace()
+            devices_anomalies[device_data.loc[i, 'anomaly']] += 1
 
     for i in range(0, number_of_devices + 1):
         column = input_column.format(i)
         log_info("Device {} ({}): {} anomalies found".format(i, column, devices_anomalies[i]))
+
 
 # Helper method to calculate the RMSE
 def log_info(string):

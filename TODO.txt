@@ -1,0 +1,3 @@
+- que corra adentro de un container
+- que cuente mejor las anomalias
+- chequear numerso de devices
